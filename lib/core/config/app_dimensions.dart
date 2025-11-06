@@ -54,4 +54,9 @@ class AppDimensions {
   static const double borderWidthThin = 1.0;
   static const double borderWidthThick = 2.0;
   static const double borderWidthExtraThick = 4.0;
+
+  //Opacity Levels
+  static const double opacityLow = 0.3;
+  static const double opacityMedium = 0.6;
+  static const double opacityHigh = 0.9;
 }
