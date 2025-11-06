@@ -1,3 +1,4 @@
+import 'package:app_kit/data/services/supabase_auth_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -5,9 +6,8 @@ import '../../core/placeholders/placeholder_screens.dart';
 import '../../core/routing/app_routes.dart';
 
 final authStateProvider = StreamProvider<bool>((ref) {
-  // Remplacez par votre logique d'authentification
-  final authService = ref.watch(authServiceProvider);
-  return authService.authStateChanges.map((user) => user != null);
+  final authService = ref.watch(supabaseAuthServiceProvider);
+  return authService.authStateChanges.map((state) => state.session != null);
 });
 
 final onboardingCompletedProvider = StateProvider<bool>((ref) {
