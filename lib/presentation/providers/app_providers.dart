@@ -1,9 +1,11 @@
-import 'package:app_kit/data/services/supabase_auth_service.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/placeholders/placeholder_screens.dart';
 import '../../core/routing/app_routes.dart';
+import '../../core/routing/go_router_refresh_stream.dart';
+import '../../data/services/supabase_auth_service.dart';
 
 export '../../data/services/supabase_auth_service.dart';
 export '../../data/services/user_prefs_service.dart';
@@ -28,13 +30,16 @@ final onboardingCompletedProvider = StateProvider<bool>((ref) {
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authStateProvider);
+  final authService = ref.watch(supabaseAuthServiceProvider);
 
   return GoRouter(
     initialLocation: AppRoutes.splash,
     debugLogDiagnostics: true,
 
     // Refresh router when auth state changes
-    refreshListenable: GoRouterRefreshStream(authState.value),
+    refreshListenable: GoRouterRefreshStream(
+      authService.authStateChanges.map((state) => state.session != null),
+    ),
 
     redirect: (context, state) {
       final isAuthenticated = authState.value ?? false;
@@ -68,3 +73,5 @@ final routerProvider = Provider<GoRouter>((ref) {
     errorBuilder: (context, state) => ErrorScreen(error: state.error),
   );
 });
+
+

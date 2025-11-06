@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -80,21 +82,5 @@ class AppRoutes {
   ];
 }
 
-class GoRouterRefreshStream extends ChangeNotifier {
-  GoRouterRefreshStream(bool? initialValue) {
-    _value = initialValue;
-  }
-
-  bool? _value;
-
-  bool? get value => _value;
-
-  set value(bool? newValue) {
-    if (_value != newValue) {
-      _value = newValue;
-      notifyListeners();
-    }
-  }
-}
 
 

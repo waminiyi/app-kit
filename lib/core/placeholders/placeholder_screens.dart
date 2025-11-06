@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../presentation/providers/app_providers.dart';
+import '../../data/services/user_prefs_service.dart';
 import '../routing/app_routes.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
@@ -91,12 +92,74 @@ class ErrorScreen extends StatelessWidget {
   }
 }
 
-class OnboardingScreen extends StatelessWidget {
+class OnboardingScreen extends ConsumerWidget {
   const OnboardingScreen({super.key});
 
   @override
-  Widget build(BuildContext context) =>
-      const Scaffold(body: Center(child: Text('Onboarding')));
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Scaffold(
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Spacer(),
+              const Icon(
+                Icons.rocket_launch,
+                size: 120,
+                color: Colors.blue,
+              ),
+              const SizedBox(height: 32),
+              Text(
+                'Bienvenue !',
+                style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Découvrez toutes les fonctionnalités de cette application',
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      color: Colors.grey[600],
+                    ),
+                textAlign: TextAlign.center,
+              ),
+              const Spacer(),
+              ElevatedButton(
+                onPressed: () async {
+                  // Marquer l'onboarding comme complété
+                  ref.read(onboardingCompletedProvider.notifier).state = true;
+
+                  // Sauvegarder dans SharedPreferences
+                  final prefs = ref.read(userPrefsServiceProvider);
+                  await prefs.setOnboardingComplete(true);
+
+                  // Naviguer vers la page de connexion
+                  if (context.mounted) {
+                    context.go(AppRoutes.login);
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: const Text(
+                  'Commencer',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class LoginScreen extends StatelessWidget {

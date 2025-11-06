@@ -63,7 +63,6 @@ dependencies:
   purchases_flutter: ^6.29.5
 
   # Utils
-  get_it: ^7.7.0
   flutter_dotenv: ^5.1.0
   logger: ^2.3.0
   intl: ^0.19.0
