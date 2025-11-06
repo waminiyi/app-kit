@@ -5,9 +5,20 @@ import 'package:go_router/go_router.dart';
 import '../../core/placeholders/placeholder_screens.dart';
 import '../../core/routing/app_routes.dart';
 
+export '../../data/services/supabase_auth_service.dart';
+export '../../data/services/user_prefs_service.dart';
+export '../../data/services/fcm_service.dart';
+export '../../data/services/analytics_service.dart';
+
 final authStateProvider = StreamProvider<bool>((ref) {
   final authService = ref.watch(supabaseAuthServiceProvider);
   return authService.authStateChanges.map((state) => state.session != null);
+});
+
+// Current User Provider
+final currentUserProvider = Provider((ref) {
+  final supabase = ref.watch(supabaseAuthServiceProvider);
+  return supabase.currentUser;
 });
 
 final onboardingCompletedProvider = StateProvider<bool>((ref) {
