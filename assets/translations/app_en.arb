@@ -1,22 +1,16 @@
 {
   "@@locale": "en",
-  "appName": "App Kit",
-  "@appName": {
-    "description": "The application name"
-  },
-  "welcome": "Welcome",
-  "@welcome": {
-    "description": "Welcome message"
-  },
-  "hello": "Hello {name}",
-  "@hello": {
-    "description": "Hello message with name parameter",
-    "placeholders": {
-      "name": {
-        "type": "String",
-        "example": "John"
-      }
-    }
-  }
+  "appName": "My App",
+  "loading": "Loading...",
+  "error": "Error",
+  "retry": "Retry",
+  "cancel": "Cancel",
+  "confirm": "Confirm",
+  "save": "Save",
+  "delete": "Delete",
+  "emptyState": "No data available",
+  "emailInvalid": "Invalid email address",
+  "fieldRequired": "This field is required"
 }
+
 
