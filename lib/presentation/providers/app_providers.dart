@@ -44,7 +44,7 @@ final routerProvider = Provider<GoRouter>((ref) {
     redirect: (context, state) {
       final isAuthenticated = authState.value ?? false;
       final isOnboarding = state.matchedLocation == AppRoutes.onboarding;
-      final isAuthRoute = state.matchedLocation.startsWith('/login') ||
+      final isAuthRoute = state.matchedLocation.startsWith('/auth') ||
           state.matchedLocation.startsWith('/register') ||
           state.matchedLocation.startsWith('/forgot-password');
 
@@ -57,7 +57,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       }
 
       if (!isAuthenticated && !isAuthRoute && !isOnboarding) {
-        return AppRoutes.login;
+        return AppRoutes.auth;
       }
 
       if (isAuthenticated && isAuthRoute) {

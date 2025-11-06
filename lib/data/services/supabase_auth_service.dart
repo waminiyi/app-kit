@@ -38,6 +38,13 @@ class SupabaseAuthService {
     }
   }
 
+  Future<AuthResponse> signInWithPassword({
+    required String email,
+    required String password,
+  }) async {
+    return signInWithEmail(email, password);
+  }
+
   Future<AuthResponse> signUpWithEmail(String email, String password) async {
     try {
       final response = await client.auth.signUp(
@@ -48,6 +55,43 @@ class SupabaseAuthService {
       return response;
     } catch (e) {
       AppLogger.e('Sign up error', e);
+      rethrow;
+    }
+  }
+
+  Future<AuthResponse> signUp({
+    required String email,
+    required String password,
+    String? emailRedirectTo,
+    Map<String, dynamic>? data,
+  }) async {
+    try {
+      final response = await client.auth.signUp(
+        email: email,
+        password: password,
+        emailRedirectTo: emailRedirectTo,
+        data: data,
+      );
+      AppLogger.i('User signed up: ${response.user?.id}');
+      return response;
+    } catch (e) {
+      AppLogger.e('Sign up error', e);
+      rethrow;
+    }
+  }
+
+  Future<void> resetPasswordForEmail(
+    String email, {
+    String? redirectTo,
+  }) async {
+    try {
+      await client.auth.resetPasswordForEmail(
+        email,
+        redirectTo: redirectTo,
+      );
+      AppLogger.i('Password reset email sent to: $email');
+    } catch (e) {
+      AppLogger.e('Password reset error', e);
       rethrow;
     }
   }

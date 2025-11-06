@@ -25,7 +25,15 @@ extension ContextExtension on BuildContext {
   EdgeInsets get viewInsets => MediaQuery.of(this).viewInsets;
 
   // Localization
-  AppLocalizations get strings => AppLocalizations.of(this)!;
+  AppLocalizations get strings {
+    final localizations = AppLocalizations.of(this);
+    if (localizations == null) {
+      throw FlutterError(
+        'AppLocalizations not found. Make sure to configure localizationsDelegates and supportedLocales in MaterialApp.',
+      );
+    }
+    return localizations;
+  }
 
   // Navigation
   void pop<T>([T? result]) => Navigator.of(this).pop(result);

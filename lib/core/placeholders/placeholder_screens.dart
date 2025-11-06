@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import '../../presentation/providers/app_providers.dart';
 import '../../data/services/user_prefs_service.dart';
 import '../routing/app_routes.dart';
-
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
 
@@ -35,7 +34,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     } else if (isAuthenticated) {
       context.go(AppRoutes.home);
     } else {
-      context.go(AppRoutes.login);
+      context.go(AppRoutes.auth);
     }
   }
 
@@ -139,7 +138,7 @@ class OnboardingScreen extends ConsumerWidget {
 
                   // Naviguer vers la page de connexion
                   if (context.mounted) {
-                    context.go(AppRoutes.login);
+                    context.go(AppRoutes.auth);
                   }
                 },
                 style: ElevatedButton.styleFrom(
@@ -162,13 +161,6 @@ class OnboardingScreen extends ConsumerWidget {
   }
 }
 
-class LoginScreen extends StatelessWidget {
-  const LoginScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) =>
-      const Scaffold(body: Center(child: Text('Login')));
-}
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});

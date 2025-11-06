@@ -10,6 +10,29 @@
   "delete": "Supprimer",
   "emptyState": "Aucune donnée disponible",
   "emailInvalid": "Adresse email invalide",
-  "fieldRequired": "Ce champ est requis"
+  "fieldRequired": "Ce champ est requis",
+
+  "enterEmail": "Email",
+  "enterPassword": "Mot de passe",
+  "labelConfirmPassword": "Confirmer le mot de passe",
+  "signIn": "Se connecter",
+  "signUp": "Créer un compte",
+  "forgotPassword": "Mot de passe oublié ?",
+  "haveAccount": "Déjà un compte ?",
+  "dontHaveAccount": "Pas de compte ?",
+  "labelConsentTermsAndConditions": "J'accepte les ",
+  "labelTermsAndConditions": "conditions générales",
+  "sendPasswordReset": "Envoyer le lien",
+  "backToSignIn": "Retour",
+  "validEmailError": "Veuillez entrer un email valide",
+  "passwordLengthError": "Le mot de passe doit contenir au moins 6 caractères",
+  "passwordResetSent": "Email de réinitialisation envoyé",
+  "missingConsentError": "Vous devez accepter les conditions générales",
+  "differentPasswordsError": "Les mots de passe ne correspondent pas",
+  "requiredFieldError": "Ce champ est requis",
+  "signInTitle": "Connexion",
+  "signUpTitle": "Créer un compte",
+  "passwordRecoveryTitle": "Réinitialisation",
+  "skip": "Passer"
 }
 

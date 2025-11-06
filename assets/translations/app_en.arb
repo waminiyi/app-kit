@@ -10,7 +10,30 @@
   "delete": "Delete",
   "emptyState": "No data available",
   "emailInvalid": "Invalid email address",
-  "fieldRequired": "This field is required"
+  "fieldRequired": "This field is required",
+
+  "enterEmail": "Email",
+  "enterPassword": "Password",
+  "labelConfirmPassword": "Confirm password",
+  "signIn": "Sign in",
+  "signUp": "Sign up",
+  "forgotPassword": "Forgot password?",
+  "haveAccount": "Already have an account?",
+  "dontHaveAccount": "Don't have an account?",
+  "labelConsentTermsAndConditions": "I accept the ",
+  "labelTermsAndConditions": "terms and conditions",
+  "sendPasswordReset": "Send reset link",
+  "backToSignIn": "Back to sign in",
+  "validEmailError": "Please enter a valid email",
+  "passwordLengthError": "Password must be at least 6 characters",
+  "passwordResetSent": "Password reset email sent",
+  "missingConsentError": "You must accept the terms and conditions",
+  "differentPasswordsError": "Passwords do not match",
+  "requiredFieldError": "This field is required",
+  "signInTitle": "Sign In",
+  "signUpTitle": "Create Account",
+  "passwordRecoveryTitle": "Password Recovery",
+  "skip": "Skip"
 }
 
 

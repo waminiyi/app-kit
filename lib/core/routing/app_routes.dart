@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:app_kit/presentation/screens/auth/auth_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -9,7 +10,7 @@ class AppRoutes {
   // Auth
   static const String splash = '/';
   static const String onboarding = '/onboarding';
-  static const String login = '/login';
+  static const String auth = '/auth';
   static const String register = '/register';
   static const String forgotPassword = '/forgot-password';
 
@@ -38,8 +39,8 @@ class AppRoutes {
 
     // Authentication Routes
     GoRoute(
-      path: AppRoutes.login,
-      builder: (context, state) => const LoginScreen(),
+      path: AppRoutes.auth,
+      builder: (context, state) => const AuthScreen(),
     ),
 
     // Main Routes with Shell (Bottom Navigation)
