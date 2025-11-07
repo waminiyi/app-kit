@@ -32,7 +32,8 @@ final onboardingCompletedProvider = FutureProvider<bool>((ref) async {
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authStateProvider);
   final authService = ref.watch(supabaseAuthServiceProvider);
-  final onboardingState = ref.watch(onboardingStateProvider);
+  // Observer uniquement isCompleted pour éviter les reconstructions à chaque step
+  final hasSeenOnboarding = ref.watch(onboardingStateProvider.select((state) => state.isCompleted));
 
   return GoRouter(
     initialLocation: AppRoutes.splash,
@@ -51,21 +52,20 @@ final routerProvider = Provider<GoRouter>((ref) {
           state.matchedLocation.startsWith('/register') ||
           state.matchedLocation.startsWith('/forgot-password');
 
-      // Check if onboarding is completed
-      final hasSeenOnboarding = onboardingState.isCompleted;
 
       // Redirect logic
+      // 1. Si l'onboarding n'est pas terminé, rediriger vers l'onboarding
       if (!hasSeenOnboarding && !isOnboarding && !isSplash) {
         return AppRoutes.onboarding;
       }
 
-      if (!isAuthenticated && !isAuthRoute && !isOnboarding && !isSplash) {
-        return AppRoutes.auth;
-      }
-
+      // 2. Si l'utilisateur est authentifié et sur une page d'auth, rediriger vers home
       if (isAuthenticated && isAuthRoute) {
         return AppRoutes.home;
       }
+
+      // 3. Ne PAS forcer la redirection vers /auth si l'onboarding est complété
+      // L'authentification est optionnelle dans ce starter kit
 
       return null; // No redirect
     },

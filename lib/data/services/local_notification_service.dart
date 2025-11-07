@@ -1,4 +1,5 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest_all.dart' as tz;
@@ -7,14 +8,23 @@ import '../../core/utils/app_logger.dart';
 part 'local_notification_service.g.dart';
 
 @riverpod
-LocalNotificationService localNotificationService(LocalNotificationServiceRef ref) {
-  return LocalNotificationService();
+LocalNotificationService localNotificationService(Ref ref) {
+  return LocalNotificationService._();
 }
 
 class LocalNotificationService {
+  LocalNotificationService._();
+
   final FlutterLocalNotificationsPlugin _plugin = FlutterLocalNotificationsPlugin();
 
   Function(NotificationResponse)? onNotificationTap;
+
+  // Handle notification tap
+  void _onNotificationResponse(NotificationResponse response) {
+    if (onNotificationTap != null) {
+      onNotificationTap!(response);
+    }
+  }
 
   Future<void> initialize({
     Function(NotificationResponse)? onNotificationTap,
@@ -108,23 +118,16 @@ class LocalNotificationService {
     }
   }
 
-  void _onNotificationResponse(NotificationResponse response) {
-    AppLogger.i('Local notification tapped: ${response.payload}');
-    onNotificationTap?.call(response);
-  }
-
   // Show instant notification
   Future<void> showNotification({
-    int? id,
+    required int id,
     required String title,
     required String body,
     String? payload,
     NotificationDetails? details,
   }) async {
-    final notificationId = id ?? DateTime.now().millisecondsSinceEpoch.remainder(100000);
-
     await _plugin.show(
-      notificationId,
+      id,
       title,
       body,
       details ?? _defaultNotificationDetails(),
@@ -134,7 +137,7 @@ class LocalNotificationService {
     AppLogger.i('Notification shown: $title');
   }
 
-  // Schedule notification
+  // Schedule notification at specific time
   Future<void> scheduleNotification({
     required int id,
     required String title,
@@ -151,7 +154,7 @@ class LocalNotificationService {
       details ?? _defaultNotificationDetails(),
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       uiLocalNotificationDateInterpretation:
-      UILocalNotificationDateInterpretation.absoluteTime,
+          UILocalNotificationDateInterpretation.absoluteTime,
       payload: payload,
     );
 
@@ -225,8 +228,8 @@ class LocalNotificationService {
   // Get active notifications
   Future<List<ActiveNotification>> getActiveNotifications() async {
     final List<ActiveNotification> activeNotifications =
-    await _plugin.getActiveNotifications();
-    return activeNotifications ?? [];
+        await _plugin.getActiveNotifications();
+    return activeNotifications;
   }
 
   // Default notification details

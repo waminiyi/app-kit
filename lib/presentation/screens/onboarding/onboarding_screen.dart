@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 
 import '../../../core/config/app_dimensions.dart';
 import '../../../core/extensions/context_extension.dart';
 import '../../../core/routing/app_routes.dart';
+import '../../../core/utils/app_logger.dart';
 import '../../../data/services/local_notification_service.dart';
 import '../../widgets/so_button.dart';
-import '../auth/auth_screen.dart';
+import '../auth/so_email_auth.dart';
 import '../paywall/upgrade_screen.dart';
 import 'onboarding_notification_screen.dart';
 import 'onboarding_showcase_screen.dart';
@@ -23,9 +25,6 @@ class OnboardingScreen extends ConsumerStatefulWidget {
 
 class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   late final PageController _pageController;
-  bool _showNotificationScreen = false;
-  bool _showAuthScreen = false;
-  bool _showPaywallScreen = false;
 
   @override
   void initState() {
@@ -48,10 +47,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
     // Si on est sur la dernière page du showcase (page 3 = 4ème page avec welcome)
     if (currentPage >= 3) {
-      // Passer à l'écran de notifications
-      setState(() {
-        _showNotificationScreen = true;
-      });
+      // Passer à l'étape notifications
+      ref.read(onboardingStateProvider.notifier).nextStep();
     } else {
       // Passer à la page suivante du showcase
       await _pageController.nextPage(
@@ -84,19 +81,18 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       await notifier.setNotificationPermission(false);
     }
 
-    // Passer à l'écran d'authentification
-    setState(() {
-      _showNotificationScreen = false;
-      _showAuthScreen = true;
-    });
+    // Passer à l'étape authentification
+    notifier.nextStep();
   }
 
   Future<void> _handleAuthSkipped() async {
-    // Passer à l'écran paywall
-    setState(() {
-      _showAuthScreen = false;
-      _showPaywallScreen = true;
-    });
+    ref.read(onboardingStateProvider.notifier).skipToPaywall();
+  }
+
+  // MODIFICATION: Gérer la réussite de l'authentification
+  Future<void> _handleAuthSuccess() async {
+    // Passer à l'étape paywall après authentification réussie
+    ref.read(onboardingStateProvider.notifier).skipToPaywall();
   }
 
   Future<void> _completeOnboarding() async {
@@ -106,21 +102,38 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     }
   }
 
+  // Vérifier si RevenueCat est configuré
+  Future<bool> _checkRevenueCatConfigured() async {
+    try {
+      // Essayer d'accéder à l'instance de Purchases
+      // Si elle n'est pas configurée, une exception sera levée
+      await Purchases.getCustomerInfo();
+      return true;
+    } catch (e) {
+      AppLogger.w('RevenueCat is not configured, skipping paywall: $e');
+      return false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Afficher l'écran de paywall
-    if (_showPaywallScreen) {
-      return UpgradeScreen(
-        onPurchaseCompleted: _completeOnboarding,
-        onPurchaseCancelled: _completeOnboarding,
-        onRestoreCompleted: _completeOnboarding,
-        onDismiss: _completeOnboarding,
-        onError: (_) => _completeOnboarding(),
+    final onboardingState = ref.watch(onboardingStateProvider);
+
+    // Afficher l'écran de notifications
+    if (onboardingState.isNotificationStep) {
+      return Scaffold(
+        backgroundColor: context.colorScheme.surface,
+        body: SafeArea(
+          child: OnboardingNotificationScreen(
+            onAllow: () => _handleNotificationPermission(true),
+            onSkip: () => _handleNotificationPermission(false),
+          ),
+        ),
       );
     }
 
     // Afficher l'écran d'authentification
-    if (_showAuthScreen) {
+    if (onboardingState.isAuthStep) {
       return Scaffold(
         backgroundColor: context.colorScheme.surface,
         body: SafeArea(
@@ -140,7 +153,20 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               ),
               // AuthScreen
               Expanded(
-                child: AuthScreen(),
+                child: SoEmailAuth(
+                  appIcon: const FlutterLogo(size: 100),
+                  appName: 'App Kit',
+                  onSignInSuccess: _handleAuthSuccess,
+                  onSignUpSuccess: _handleAuthSuccess,
+                  onError: (error) {
+                    context.showErrorSnackBar(error.toString());
+                  },
+                  onSkip: _handleAuthSkipped,
+                  showSkip: false, // Désactiver le skip interne car on a déjà un bouton
+                  onTermsTap: () {
+                    context.showSnackBar('Voir les conditions générales');
+                  },
+                ),
               ),
             ],
           ),
@@ -148,16 +174,45 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       );
     }
 
-    // Afficher l'écran de notifications
-    if (_showNotificationScreen) {
-      return Scaffold(
-        backgroundColor: context.colorScheme.surface,
-        body: SafeArea(
-          child: OnboardingNotificationScreen(
-            onAllow: () => _handleNotificationPermission(true),
-            onSkip: () => _handleNotificationPermission(false),
-          ),
-        ),
+    // Afficher l'écran de paywall
+    if (onboardingState.isPaywallStep) {
+      // Vérifier si RevenueCat est configuré avant d'afficher le paywall
+      return FutureBuilder<bool>(
+        future: _checkRevenueCatConfigured(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Scaffold(
+              backgroundColor: context.colorScheme.surface,
+              body: const Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
+          }
+
+          final isConfigured = snapshot.data ?? false;
+
+          if (!isConfigured) {
+            // RevenueCat n'est pas configuré, terminer l'onboarding directement
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              _completeOnboarding();
+            });
+            return Scaffold(
+              backgroundColor: context.colorScheme.surface,
+              body: const Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
+          }
+
+          // RevenueCat est configuré, afficher le paywall
+          return UpgradeScreen(
+            onPurchaseCompleted: _completeOnboarding,
+            onPurchaseCancelled: _completeOnboarding,
+            onRestoreCompleted: _completeOnboarding,
+            onDismiss: _completeOnboarding,
+            onError: (_) => _completeOnboarding(),
+          );
+        },
       );
     }
 

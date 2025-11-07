@@ -28,16 +28,23 @@ class OnboardingState {
 
   bool get isFirstStep => currentStep == 0;
   bool get isLastStep => currentStep == totalSteps - 1;
-  bool get isShowcaseStep => currentStep >= 0 && currentStep <= 3;
-  bool get isNotificationStep => false; // No longer used
-  bool get isSignInStep => false; // No longer used
-  bool get isPaywallStep => false; // No longer used
+
+  // Étapes de l'onboarding
+  // 0: Showcase (welcome + 3 features dans un PageView)
+  // 1: Notifications
+  // 2: Authentification
+  // 3: Paywall
+  bool get isShowcaseStep => currentStep == 0;
+  bool get isNotificationStep => currentStep == 1;
+  bool get isAuthStep => currentStep == 2;
+  bool get isPaywallStep => currentStep == 3;
   bool get isLoading => false; // Will be managed by notifier if needed
 
-  // Total steps: Welcome (0) + 3 Features (1-3) = 4 steps total
-  // Notifications, Auth et Paywall sont gérés en dehors du PageView
   static const int totalSteps = 4;
-  static const int showcaseStepsCount = 3;
+  static const int stepShowcase = 0;
+  static const int stepNotification = 1;
+  static const int stepAuth = 2;
+  static const int stepPaywall = 3;
 }
 
 /// Onboarding state notifier
@@ -95,7 +102,7 @@ class OnboardingNotifier extends StateNotifier<OnboardingState> {
   }
 
   void skipToPaywall() {
-    goToStep(6);
+    goToStep(3);
   }
 
   void skipToEnd() async {

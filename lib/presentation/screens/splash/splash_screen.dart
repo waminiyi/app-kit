@@ -34,10 +34,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     // Navigate based on state
     if (!hasSeenOnboarding) {
       context.go(AppRoutes.onboarding);
-    } else if (isAuthenticated) {
-      context.go(AppRoutes.home);
     } else {
-      context.go(AppRoutes.auth);
+      // Après l'onboarding, toujours aller vers home
+      // L'authentification est optionnelle dans ce starter kit
+      context.go(AppRoutes.home);
     }
   }
 

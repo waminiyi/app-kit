@@ -1,4 +1,5 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../core/utils/app_logger.dart';
 import 'local_notification_service.dart';
@@ -6,7 +7,7 @@ import 'local_notification_service.dart';
 part 'fcm_service.g.dart';
 
 @riverpod
-FCMService fcmService(FcmServiceRef ref) {
+FCMService fcmService(Ref ref) {
   return FCMService(ref.watch(localNotificationServiceProvider));
 }
 
@@ -77,6 +78,7 @@ class FCMService {
     // Show local notification when app is in foreground
     if (message.notification != null) {
       _localNotificationService.showNotification(
+        id: message.hashCode, // Use message hashCode as unique ID
         title: message.notification!.title ?? 'Notification',
         body: message.notification!.body ?? '',
         payload: message.data.toString(),
