@@ -56,4 +56,25 @@ class AnalyticsService {
   Future<void> setUserProperty(String name, String value) async {
     await _analytics.setUserProperty(name: name, value: value);
   }
+
+  // Paywall Analytics
+  Future<void> logPaywallPresented() async {
+    await logEvent('paywall_presented');
+  }
+
+  Future<void> logPaywallPurchaseCompleted() async {
+    await logEvent('paywall_purchase_completed');
+  }
+
+  Future<void> logPaywallPurchaseCancelled() async {
+    await logEvent('paywall_purchase_cancelled');
+  }
+
+  Future<void> logPaywallRestoreCompleted() async {
+    await logEvent('paywall_restore_completed');
+  }
+
+  Future<void> logPaywallError(String error) async {
+    await logEvent('paywall_error', parameters: {'error': error});
+  }
 }
