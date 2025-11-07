@@ -1,11 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
-import '../../core/placeholders/placeholder_screens.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/routing/app_routes.dart';
 import '../../core/routing/go_router_refresh_stream.dart';
 import '../../data/services/supabase_auth_service.dart';
+import '../screens/error/error_screen.dart';
+import '../screens/onboarding/onboarding_state.dart';
 
 export '../../data/services/supabase_auth_service.dart';
 export '../../data/services/user_prefs_service.dart';
@@ -23,14 +23,16 @@ final currentUserProvider = Provider((ref) {
   return supabase.currentUser;
 });
 
-final onboardingCompletedProvider = StateProvider<bool>((ref) {
-  // Load from SharedPreferences
-  return false;
+// Onboarding Completed Provider
+final onboardingCompletedProvider = FutureProvider<bool>((ref) async {
+  final prefs = await SharedPreferences.getInstance();
+  return prefs.getBool('onboarding_completed') ?? false;
 });
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authStateProvider);
   final authService = ref.watch(supabaseAuthServiceProvider);
+  final onboardingState = ref.watch(onboardingStateProvider);
 
   return GoRouter(
     initialLocation: AppRoutes.splash,
@@ -44,19 +46,20 @@ final routerProvider = Provider<GoRouter>((ref) {
     redirect: (context, state) {
       final isAuthenticated = authState.value ?? false;
       final isOnboarding = state.matchedLocation == AppRoutes.onboarding;
+      final isSplash = state.matchedLocation == AppRoutes.splash;
       final isAuthRoute = state.matchedLocation.startsWith('/auth') ||
           state.matchedLocation.startsWith('/register') ||
           state.matchedLocation.startsWith('/forgot-password');
 
-      // Check if onboarding is completed (use SharedPreferences)
-      final hasSeenOnboarding = ref.read(onboardingCompletedProvider);
+      // Check if onboarding is completed
+      final hasSeenOnboarding = onboardingState.isCompleted;
 
       // Redirect logic
-      if (!hasSeenOnboarding && !isOnboarding) {
+      if (!hasSeenOnboarding && !isOnboarding && !isSplash) {
         return AppRoutes.onboarding;
       }
 
-      if (!isAuthenticated && !isAuthRoute && !isOnboarding) {
+      if (!isAuthenticated && !isAuthRoute && !isOnboarding && !isSplash) {
         return AppRoutes.auth;
       }
 
@@ -73,5 +76,3 @@ final routerProvider = Provider<GoRouter>((ref) {
     errorBuilder: (context, state) => ErrorScreen(error: state.error),
   );
 });
-
-

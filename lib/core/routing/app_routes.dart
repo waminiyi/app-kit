@@ -1,10 +1,14 @@
-import 'dart:async';
-
 import 'package:app_kit/presentation/screens/auth/auth_screen.dart';
-import 'package:flutter/material.dart';
+import 'package:app_kit/presentation/screens/onboarding/onboarding.dart';
+import 'package:app_kit/presentation/screens/paywall/upgrade_screen.dart';
 import 'package:go_router/go_router.dart';
 
-import '../placeholders/placeholder_screens.dart';
+import '../../presentation/screens/home/home_screen.dart';
+import '../../presentation/screens/main/main_shell.dart';
+import '../../presentation/screens/notifications/notifications.dart';
+import '../../presentation/screens/profile/profile_screen.dart';
+import '../../presentation/screens/settings/settings.dart';
+import '../../presentation/screens/splash/splash_screen.dart';
 
 class AppRoutes {
   // Auth
@@ -35,9 +39,7 @@ class AppRoutes {
     GoRoute(
       path: AppRoutes.onboarding,
       builder: (context, state) => const OnboardingScreen(),
-    ),
-
-    // Authentication Routes
+    ), // Authentication Routes
     GoRoute(
       path: AppRoutes.auth,
       builder: (context, state) => const AuthScreen(),
@@ -73,7 +75,7 @@ class AppRoutes {
     // Feature Routes
     GoRoute(
       path: AppRoutes.paywall,
-      builder: (context, state) => const PaywallScreen(),
+      builder: (context, state) => const UpgradeScreen(),
     ),
 
     GoRoute(
@@ -82,6 +84,3 @@ class AppRoutes {
     ),
   ];
 }
-
-
-

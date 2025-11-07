@@ -68,8 +68,7 @@ Future<void> _initializeRevenueCat() async {
 
     await Purchases.configure(
       PurchasesConfiguration(apiKey)
-        ..appUserID = null // Optional: set a custom user ID
-        ..observerMode = false,
+        ..appUserID = null, // Optional: set a custom user ID
     );
 
     AppLogger.i('✓ RevenueCat initialized successfully');

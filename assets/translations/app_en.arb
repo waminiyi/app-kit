@@ -33,7 +33,37 @@
   "signInTitle": "Sign In",
   "signUpTitle": "Create Account",
   "passwordRecoveryTitle": "Password Recovery",
-  "skip": "Skip"
+  "skip": "Skip",
+
+  "onboardingWelcomeTitle": "Welcome!",
+  "onboardingWelcomeDescription": "Discover all the features waiting for you",
+  "onboardingFeature1Title": "Fast and Simple",
+  "onboardingFeature1Description": "An intuitive interface for easy use",
+  "onboardingFeature2Title": "Secure",
+  "onboardingFeature2Description": "Your data is protected and encrypted",
+  "onboardingFeature3Title": "Synchronized",
+  "onboardingFeature3Description": "Access your data anywhere, on all your devices",
+  "onboardingNotificationTitle": "Stay Informed",
+  "onboardingNotificationDescription": "Receive notifications to not miss anything important",
+  "onboardingNotificationAllow": "Enable Notifications",
+  "onboardingNotificationSkip": "Later",
+  "onboardingPremiumTitle": "Go Premium",
+  "onboardingPremiumDescription": "Unlock all premium features and enjoy the full experience",
+  "onboardingPremiumFeature1": "Unlimited Access",
+  "onboardingPremiumFeature2": "No Ads",
+  "onboardingPremiumFeature3": "Priority Support",
+  "onboardingPremiumButton": "See Offers",
+  "onboardingPremiumSkip": "Continue without Premium",
+  "next": "Next",
+  "previous": "Previous",
+  "finish": "Finish",
+  "getStarted": "Get Started",
+  "labelContinue": "Continue",
+  "notificationPermissionGranted": "Notifications enabled successfully",
+  "onboardingSignInTitle": "Sign In",
+  "onboardingSignInDescription": "Sign in to sync your data across all your devices",
+  "onboardingSignInButton": "Sign In",
+  "onboardingSignInSkip": "Continue without signing in"
 }
 
 

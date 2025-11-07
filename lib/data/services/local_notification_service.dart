@@ -29,9 +29,9 @@ class LocalNotificationService {
 
     // iOS settings
     const iosSettings = DarwinInitializationSettings(
-      requestAlertPermission: true,
-      requestBadgePermission: true,
-      requestSoundPermission: true,
+      requestAlertPermission: false, // We'll request manually
+      requestBadgePermission: false,
+      requestSoundPermission: false,
     );
 
     const initSettings = InitializationSettings(
@@ -45,6 +45,67 @@ class LocalNotificationService {
     );
 
     AppLogger.i('Local notifications initialized');
+  }
+
+  // Request notification permissions
+  Future<bool> requestPermission() async {
+    try {
+      // For iOS
+      final bool? result = await _plugin
+          .resolvePlatformSpecificImplementation<
+              IOSFlutterLocalNotificationsPlugin>()
+          ?.requestPermissions(
+            alert: true,
+            badge: true,
+            sound: true,
+          );
+
+      // For Android 13+
+      final androidImplementation = _plugin.resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>();
+
+      if (androidImplementation != null) {
+        final bool? androidResult = await androidImplementation.requestNotificationsPermission();
+        AppLogger.i('Android notification permission: $androidResult');
+      }
+
+      final granted = result ?? true; // Android < 13 doesn't need permission
+      AppLogger.i('Notification permission granted: $granted');
+      return granted;
+    } catch (e) {
+      AppLogger.e('Error requesting notification permission', e);
+      return false;
+    }
+  }
+
+  // Check notification permissions
+  Future<bool> checkPermission() async {
+    try {
+      // For iOS
+      final bool? result = await _plugin
+          .resolvePlatformSpecificImplementation<
+              IOSFlutterLocalNotificationsPlugin>()
+          ?.requestPermissions(
+            alert: true,
+            badge: true,
+            sound: true,
+          );
+
+      // For Android 13+, check if permission is granted
+      final androidImplementation = _plugin.resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>();
+
+      if (androidImplementation != null) {
+        final bool? androidResult = await androidImplementation.areNotificationsEnabled();
+        AppLogger.i('Android notifications enabled: $androidResult');
+        return androidResult ?? true;
+      }
+
+      return result ?? true; // Android < 13 doesn't need permission
+    } catch (e) {
+      AppLogger.e('Error checking notification permission', e);
+      return false;
+    }
   }
 
   void _onNotificationResponse(NotificationResponse response) {
